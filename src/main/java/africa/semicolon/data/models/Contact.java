@@ -12,7 +12,10 @@ import java.time.LocalDateTime;
 @Document("Contacts")
 public class Contact {
     @Id
-    private String name;
+    private String id;
+    private String username;
+    private String firstName;
+    private String lastName;
     private String email;
     private String phoneNumber;
     private LocalDateTime dateTimeCreated;

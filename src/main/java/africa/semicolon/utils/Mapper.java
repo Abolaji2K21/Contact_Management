@@ -1,9 +1,17 @@
 package africa.semicolon.utils;
 
+import africa.semicolon.contactException.BigContactException;
+import africa.semicolon.data.models.Contact;
 import africa.semicolon.data.models.User;
+import africa.semicolon.dtos.requests.CreateContactRequest;
+import africa.semicolon.dtos.requests.EditContactRequest;
 import africa.semicolon.dtos.requests.RegisterUserRequest;
+import africa.semicolon.dtos.response.CreateContactResponse;
+import africa.semicolon.dtos.response.EditContactResponse;
 import africa.semicolon.dtos.response.RegisterUserResponse;
+import africa.semicolon.services.UserService;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Mapper {
@@ -23,4 +31,45 @@ public class Mapper {
         registerUserResponse.setDateRegistered(DateTimeFormatter.ofPattern("dd-MM-yyyy, hh:mm:ss").format(user.getDateCreated()));
         return registerUserResponse;
     }
+    public static CreateContactResponse mapCreateContactResponse(Contact savedContact) {
+        CreateContactResponse response = new CreateContactResponse();
+        response.setContactId(savedContact.getId());
+        response.setFirstName(savedContact.getFirstName());
+        response.setLastName(savedContact.getLastName());
+        response.setPhoneNumber(savedContact.getPhoneNumber());
+        response.setEmail(savedContact.getEmail());
+        response.setDateCreated(savedContact.getDateTimeCreated().toString());
+        return response;
+    }
+
+    public static Contact mapContact(CreateContactRequest createContactRequest, String username, User user) {
+        Contact contact = new Contact();
+        contact.setUsername(username);
+        contact.setPhoneNumber(createContactRequest.getPhoneNumber());
+        contact.setFirstName(createContactRequest.getFirstname());
+        contact.setLastName(createContactRequest.getLastname());
+        contact.setEmail(createContactRequest.getEmail());
+        contact.setUserId(user.getId());
+        return contact;
+    }
+
+    public static EditContactResponse mapEditContactResponse(Contact updatedContact) {
+        EditContactResponse response = new EditContactResponse();
+        response.setContactId(updatedContact.getId());
+        response.setFirstName(updatedContact.getFirstName());
+        response.setLastName(updatedContact.getLastName());
+        response.setPhoneNumber(updatedContact.getPhoneNumber());
+        response.setEmail(updatedContact.getEmail());
+        response.setDateUpdated(updatedContact.getDateTimeUpdated().toString());
+        return response;
+    }
+    public static void mapEdit(EditContactRequest editContactRequest, Contact existingContact) {
+        existingContact.setPhoneNumber(editContactRequest.getPhoneNumber());
+        existingContact.setFirstName(editContactRequest.getFirstname());
+        existingContact.setLastName(editContactRequest.getLastname());
+        existingContact.setEmail(editContactRequest.getEmail());
+        existingContact.setDateTimeUpdated(LocalDateTime.now());
+    }
+
+
 }

@@ -9,4 +9,5 @@ public class EditContactRequest {
     private String lastname;
     private String phoneNumber;
     private String email;
+    private String contactId;
 }
