@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class UserServiceImplTest {
@@ -165,6 +166,37 @@ class UserServiceImplTest {
 
         assertThat(userRepository.count(), is(1L));
 
+    }
+    @Test
+    void testRegisterWithEmptyUsername() {
+        RegisterUserRequest registerRequest = new RegisterUserRequest();
+        registerRequest.setFirstname("PenIs");
+        registerRequest.setLastname("Up");
+        registerRequest.setUsername("");
+        registerRequest.setPassword("Holes");
+
+        assertThrows(BigContactException.class, () -> userService.register(registerRequest));
+    }
+
+    @Test
+    void testRegisterWithNullUsername() {
+        RegisterUserRequest registerRequest = new RegisterUserRequest();
+        registerRequest.setFirstname("PenIs");
+        registerRequest.setLastname("Up");
+        registerRequest.setUsername(null);
+        registerRequest.setPassword("Holes");
+
+        assertThrows(NullPointerException.class, () -> userService.register(registerRequest));
+    }
+
+
+    @Test
+    void testLoginWithEmptyUsername() {
+        LoginUserRequest loginRequest = new LoginUserRequest();
+        loginRequest.setUsername("");
+        loginRequest.setPassword("Holes");
+
+        assertThrows(BigContactException.class, () -> userService.login(loginRequest));
     }
 
 

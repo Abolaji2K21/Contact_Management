@@ -77,8 +77,14 @@ public class UserServiceImpl implements UserService {
 
 
     private void validate(String username) {
-        boolean userExists = userRepository.existsByUsername(username);
-        if (userExists) throw new UserExistsException(String.format("%s already exists", username));
+        if (username == null || username.isEmpty()) {
+            throw new BigContactException("Username cannot be null or empty");
+        }
+
+        String lowercaseUsername = username.toLowerCase();
+        if (userRepository.existsByUsername(lowercaseUsername)) {
+            throw new BigContactException(lowercaseUsername + " already exists");
+        }
     }
 
 
