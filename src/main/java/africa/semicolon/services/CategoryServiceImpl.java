@@ -22,31 +22,29 @@ import static africa.semicolon.utils.Mapper.mapCreateCategoryResponse;
 import static africa.semicolon.utils.Mapper.mapEditCategoryResponse;
 
 @Service
-public class CategoryServiceImpl implements CategoryService{
+public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
     @Autowired
     private ContactRepository contactRepository;
+
     @Autowired
     private UserService userService;
-
 
     @Override
     public CreateCategoryResponse createCategory(CreateCategoryRequest createCategoryRequest) {
         String username = createCategoryRequest.getUsername();
+        String firstName = createCategoryRequest.getFirstName();
         validateUser(username);
 
-        Category category = new Category();
-        category.setDescription(createCategoryRequest.getDescription());
-        category.setUsername(username);
-        Category savedCategory = categoryRepository.save(category);
+        Category savedCategory = saveCategory(createCategoryRequest.getDescription(), username);
 
-        saveContactWithCategory(savedCategory, username);
-        return mapCreateCategoryResponse(category);
+        saveContactWithCategory(savedCategory, username, firstName);
 
+        return mapCreateCategoryResponse(savedCategory);
     }
-
 
     @Override
     public EditCategoryResponse editCategory(EditCategoryRequest editCategoryRequest) {
@@ -55,20 +53,12 @@ public class CategoryServiceImpl implements CategoryService{
 
         validateUser(username);
         Category existingCategory = getCategoryByDescription(description);
-        existingCategory.setUsername(username);
+        validateCategoryOwnership(existingCategory, username);
 
-        if (!existingCategory.getDescription().equals(description)) {
-            existingCategory.setDescription(description);
-        }
-        if (!existingCategory.getUsername().equals(username)) {
-            throw new UserNotFoundException("User with username " + username + " is not authorized to edit this category");
-        }
+        updateCategory(existingCategory, description, username);
 
-
-        Category updatedCategory = categoryRepository.save(existingCategory);
-        return mapEditCategoryResponse(updatedCategory);
+        return mapEditCategoryResponse(existingCategory);
     }
-
 
     @Override
     public DeleteCategoryResponse deleteCategory(DeleteCategoryRequest deleteCategoryRequest) {
@@ -76,14 +66,11 @@ public class CategoryServiceImpl implements CategoryService{
         validateUser(username);
 
         Category existingCategory = getCategoryByDescription(deleteCategoryRequest.getDescription());
-
-        if (!existingCategory.getUsername().equals(username)) {
-            throw new UserNotFoundException("User with username " + username + " is not authorized to delete this category");
-        }
+        validateCategoryOwnership(existingCategory, username);
 
         categoryRepository.delete(existingCategory);
-        return new DeleteCategoryResponse();
 
+        return new DeleteCategoryResponse();
     }
 
     @Override
@@ -100,14 +87,14 @@ public class CategoryServiceImpl implements CategoryService{
     @Override
     public void addContactToCategory(String username, String description, Contact contact) {
         validateUser(username);
-
         Category category = getCategoryByDescription(description);
 
-        if (contact.getId()== null){
-                contact = contactRepository.save(contact);
+        if (contact.getId() == null) {
+            contact = contactRepository.save(contact);
         }
-            category.getContacts().add(contact);
-            categoryRepository.save(category);
+
+        category.getContacts().add(contact);
+        categoryRepository.save(category);
     }
 
     @Override
@@ -116,31 +103,46 @@ public class CategoryServiceImpl implements CategoryService{
 
         Category category = getCategoryByDescription(description);
         category.getContacts().removeIf(n -> n.getId().equals(contact.getId()));
-
         categoryRepository.save(category);
-
-
     }
+
     private void validateUser(String username) {
-        if (!userService.isUserRegistered(username)) {
-            throw new BigContactException("User with username " + username + " is not registered");
-        }
-
-        if (!userService.isUserLoggedIn(username)) {
-            throw new BigContactException("User with username " + username + " is not logged in");
+        if (!userService.isUserRegistered(username) || !userService.isUserLoggedIn(username)) {
+            throw new BigContactException("User with username " + username + " is not registered or logged in");
         }
     }
+
     private Category getCategoryByDescription(String description) {
         Optional<Category> optionalCategory = categoryRepository.findByDescription(description);
         return optionalCategory.orElseThrow(() -> new BigContactException("Category not found with description: " + description));
     }
 
-    private void saveContactWithCategory(Category savedCategory, String username) {
+    private void saveContactWithCategory(Category savedCategory, String username,String firstname) {
         Contact contact = new Contact();
         contact.setCategory(savedCategory);
         contact.setUsername(username);
+        contact.setFirstName(firstname);
         contactRepository.save(contact);
     }
 
+    private Category saveCategory(String description, String username) {
+        Category category = new Category();
+        category.setDescription(description);
+        category.setUsername(username);
+        return categoryRepository.save(category);
+    }
 
+    private void validateCategoryOwnership(Category category, String username) {
+        if (!category.getUsername().equals(username)) {
+            throw new UserNotFoundException("User with username " + username + " is not authorized to perform this action on the category");
+        }
+    }
+
+    private void updateCategory(Category category, String description, String username) {
+        if (!category.getDescription().equals(description) || !category.getUsername().equals(username)) {
+            category.setDescription(description);
+            category.setUsername(username);
+            categoryRepository.save(category);
+        }
+    }
 }

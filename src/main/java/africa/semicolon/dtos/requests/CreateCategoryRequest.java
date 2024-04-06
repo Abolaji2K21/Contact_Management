@@ -7,5 +7,6 @@ public class CreateCategoryRequest {
     private String description;
     private String username;
     private String categoryId;
+    private String firstName;
 
 }
