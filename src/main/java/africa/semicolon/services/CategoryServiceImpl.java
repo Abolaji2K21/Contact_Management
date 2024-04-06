@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import static africa.semicolon.utils.Mapper.mapCreateCategoryResponse;
+import static africa.semicolon.utils.Mapper.mapEditCategoryResponse;
+
 @Service
 public class CategoryServiceImpl implements CategoryService{
 
@@ -30,22 +33,47 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public CreateCategoryResponse createCategory(CreateCategoryRequest createCategoryRequest) {
-        return null;
+        String username = createCategoryRequest.getUsername();
+        validateUser(username);
+
+        Category category = new Category();
+        category.setDescription(createCategoryRequest.getDescription());
+        category.setUsername(username);
+        Category savedCategory = categoryRepository.save(category);
+
+        saveContactWithCategory(savedCategory, username);
+        return mapCreateCategoryResponse(category);
+
     }
+
 
     @Override
     public EditCategoryResponse editCategory(EditCategoryRequest editCategoryRequest) {
-        return null;
+        String description = editCategoryRequest.getDescription();
+        String username = editCategoryRequest.getUsername();
+
+        validateUser(username);
+        Category existingCategory = getCategoryByDescription(description);
+        existingCategory.setUsername(username);
+
+        if (!existingCategory.getDescription().equals(description)) {
+            existingCategory.setDescription(description);
+        }
+
+        Category updatedCategory = categoryRepository.save(existingCategory);
+        return mapEditCategoryResponse(updatedCategory);
     }
+
 
     @Override
     public DeleteCategoryResponse deleteCategory(DeleteCategoryRequest deleteCategoryRequest) {
+
         return null;
     }
 
     @Override
     public List<Category> getAllCategories() {
-        return null;
+        return categoryRepository.findAll();
     }
 
     @Override
@@ -75,6 +103,13 @@ public class CategoryServiceImpl implements CategoryService{
     private Category getCategoryByDescription(String description) {
         Optional<Category> optionalCategory = categoryRepository.findByDescription(description);
         return optionalCategory.orElseThrow(() -> new BigContactException("Category not found with description: " + description));
+    }
+
+    private void saveContactWithCategory(Category savedCategory, String username) {
+        Contact contact = new Contact();
+        contact.setCategory(savedCategory);
+        contact.setUsername(username);
+        contactRepository.save(contact);
     }
 
 

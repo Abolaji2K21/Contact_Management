@@ -1,15 +1,13 @@
 package africa.semicolon.utils;
 
 import africa.semicolon.contactException.BigContactException;
+import africa.semicolon.data.models.Category;
 import africa.semicolon.data.models.Contact;
 import africa.semicolon.data.models.User;
 import africa.semicolon.dtos.requests.CreateContactRequest;
 import africa.semicolon.dtos.requests.EditContactRequest;
 import africa.semicolon.dtos.requests.RegisterUserRequest;
-import africa.semicolon.dtos.response.CreateContactResponse;
-import africa.semicolon.dtos.response.DeleteContactResponse;
-import africa.semicolon.dtos.response.EditContactResponse;
-import africa.semicolon.dtos.response.RegisterUserResponse;
+import africa.semicolon.dtos.response.*;
 import africa.semicolon.services.UserService;
 
 import java.time.LocalDateTime;
@@ -79,6 +77,19 @@ public class Mapper {
 
         return response;
     }
-
+    public static CreateCategoryResponse mapCreateCategoryResponse(Category category) {
+        CreateCategoryResponse response = new CreateCategoryResponse();
+        response.setCategoryId(category.getId());
+        response.setDescription(category.getDescription());
+        response.setUsername(category.getUsername());
+        return response;
+    }
+    public static EditCategoryResponse mapEditCategoryResponse(Category updatedCategory) {
+        EditCategoryResponse response = new EditCategoryResponse();
+        response.setCategoryId(updatedCategory.getId());
+        response.setDescription(updatedCategory.getDescription());
+        response.setUsername(updatedCategory.getUsername());
+        return response;
+    }
 
 }
