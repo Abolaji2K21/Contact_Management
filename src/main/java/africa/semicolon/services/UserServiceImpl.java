@@ -81,9 +81,9 @@ public class UserServiceImpl implements UserService {
             throw new BigContactException("Username cannot be null or empty");
         }
 
-        String lowercaseUsername = username.toLowerCase();
-        if (userRepository.existsByUsername(lowercaseUsername)) {
-            throw new BigContactException(lowercaseUsername + " already exists");
+        String existingUser = username.toLowerCase();
+        if (userRepository.existsByUsername(existingUser)) {
+            throw new BigContactException(existingUser + " already exists");
         }
     }
 
