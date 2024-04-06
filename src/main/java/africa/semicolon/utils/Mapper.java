@@ -39,7 +39,7 @@ public class Mapper {
         response.setLastName(savedContact.getLastName());
         response.setPhoneNumber(savedContact.getPhoneNumber());
         response.setEmail(savedContact.getEmail());
-        response.setDateCreated(savedContact.getDateTimeCreated().toString());
+        response.setDateCreated(String.valueOf(savedContact.getDateTimeCreated()));
         return response;
     }
 
