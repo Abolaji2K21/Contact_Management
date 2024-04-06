@@ -1,6 +1,7 @@
 package africa.semicolon.services;
 
 import africa.semicolon.contactException.BigContactException;
+import africa.semicolon.contactException.UserNotFoundException;
 import africa.semicolon.data.models.Category;
 import africa.semicolon.data.models.Contact;
 import africa.semicolon.data.repositories.CategoryRepository;
@@ -59,6 +60,10 @@ public class CategoryServiceImpl implements CategoryService{
         if (!existingCategory.getDescription().equals(description)) {
             existingCategory.setDescription(description);
         }
+        if (!existingCategory.getUsername().equals(username)) {
+            throw new UserNotFoundException("User with username " + username + " is not authorized to edit this category");
+        }
+
 
         Category updatedCategory = categoryRepository.save(existingCategory);
         return mapEditCategoryResponse(updatedCategory);
@@ -67,8 +72,18 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public DeleteCategoryResponse deleteCategory(DeleteCategoryRequest deleteCategoryRequest) {
+        String username = deleteCategoryRequest.getUsername();
+        validateUser(username);
 
-        return null;
+        Category existingCategory = getCategoryByDescription(deleteCategoryRequest.getDescription());
+
+        if (!existingCategory.getUsername().equals(username)) {
+            throw new UserNotFoundException("User with username " + username + " is not authorized to delete this category");
+        }
+
+        categoryRepository.delete(existingCategory);
+        return new DeleteCategoryResponse();
+
     }
 
     @Override
@@ -83,12 +98,27 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
-    public void addContactToCategory(String username, String categoryId, Contact contact) {
+    public void addContactToCategory(String username, String description, Contact contact) {
+        validateUser(username);
 
+        Category category = getCategoryByDescription(description);
+
+        if (contact.getId()== null){
+                contact = contactRepository.save(contact);
+        }
+            category.getContacts().add(contact);
+            categoryRepository.save(category);
     }
 
     @Override
-    public void removeNoteFromCategory(String username, String categoryId, Contact contact) {
+    public void removeNoteFromCategory(String username, String description, Contact contact) {
+        validateUser(username);
+
+        Category category = getCategoryByDescription(description);
+        category.getContacts().removeIf(n -> n.getId().equals(contact.getId()));
+
+        categoryRepository.save(category);
+
 
     }
     private void validateUser(String username) {
