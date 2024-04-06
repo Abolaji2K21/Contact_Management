@@ -7,6 +7,7 @@ import africa.semicolon.dtos.requests.CreateContactRequest;
 import africa.semicolon.dtos.requests.EditContactRequest;
 import africa.semicolon.dtos.requests.RegisterUserRequest;
 import africa.semicolon.dtos.response.CreateContactResponse;
+import africa.semicolon.dtos.response.DeleteContactResponse;
 import africa.semicolon.dtos.response.EditContactResponse;
 import africa.semicolon.dtos.response.RegisterUserResponse;
 import africa.semicolon.services.UserService;
@@ -69,6 +70,14 @@ public class Mapper {
         existingContact.setLastName(editContactRequest.getLastname());
         existingContact.setEmail(editContactRequest.getEmail());
         existingContact.setDateTimeUpdated(LocalDateTime.now());
+    }
+    public static DeleteContactResponse mapDeleteContactResponse(Contact existingContact, String username) {
+        DeleteContactResponse response = new DeleteContactResponse();
+        response.setContactId(existingContact.getId());
+        response.setDeleted(true);
+        response.setUsername(username);
+
+        return response;
     }
 
 

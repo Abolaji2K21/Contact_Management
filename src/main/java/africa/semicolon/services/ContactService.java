@@ -14,8 +14,6 @@ public interface ContactService {
 
     EditContactResponse editContact(EditContactRequest editContactRequest);
 
-    Contact findContactManagerBy(String username);
-
     User findUserBy(String username);
 
     DeleteContactResponse deleteContact(DeleteContactRequest deleteContactRequest);
