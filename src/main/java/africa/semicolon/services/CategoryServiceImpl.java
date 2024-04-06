@@ -98,7 +98,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void removeNoteFromCategory(String username, String description, Contact contact) {
+    public void removeContactFromCategory(String username, String description, Contact contact) {
         validateUser(username);
 
         Category category = getCategoryByDescription(description);
