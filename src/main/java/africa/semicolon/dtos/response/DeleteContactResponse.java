@@ -1,4 +1,4 @@
-package africa.semicolon.services;
+package africa.semicolon.dtos.response;
 
 import lombok.Data;
 

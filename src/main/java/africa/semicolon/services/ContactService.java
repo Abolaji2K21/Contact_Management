@@ -6,6 +6,7 @@ import africa.semicolon.dtos.requests.CreateContactRequest;
 import africa.semicolon.dtos.requests.DeleteContactRequest;
 import africa.semicolon.dtos.requests.EditContactRequest;
 import africa.semicolon.dtos.response.CreateContactResponse;
+import africa.semicolon.dtos.response.DeleteContactResponse;
 import africa.semicolon.dtos.response.EditContactResponse;
 
 public interface ContactService {
