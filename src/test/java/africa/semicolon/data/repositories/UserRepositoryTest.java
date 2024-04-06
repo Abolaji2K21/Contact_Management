@@ -22,7 +22,6 @@ class UserRepositoryTest {
         User user = new User();
         myRepository.save(user);
         assertThat(myRepository.count(), is(1L));
-
     }
 
 }
