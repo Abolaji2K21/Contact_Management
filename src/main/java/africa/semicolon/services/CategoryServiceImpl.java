@@ -15,6 +15,7 @@ import africa.semicolon.dtos.response.EditCategoryResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,24 +86,39 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void addContactToCategory(String username, String description, Contact contact) {
+    public void addContactToCategory(String username, String description, Contact createContactRequest) {
         validateUser(username);
         Category category = getCategoryByDescription(description);
 
-        if (contact.getId() == null) {
-            contact = contactRepository.save(contact);
+        Contact savedContact = contactRepository.findByUsername(username);
+
+        if (savedContact != null) {
+            category.getContacts().add(savedContact);
+            categoryRepository.save(category);
+        } else {
+            Contact newContact = new Contact();
+            newContact.setUsername(username);
+            newContact.setFirstName(createContactRequest.getFirstName());
+            newContact.setLastName(createContactRequest.getLastName());
+            newContact.setEmail(createContactRequest.getEmail());
+            newContact.setPhoneNumber(createContactRequest.getPhoneNumber());
+            newContact.setDateTimeCreated(LocalDateTime.now());
+            contactRepository.save(newContact);
+            category.getContacts().add(newContact);
+            categoryRepository.save(category);
         }
 
-        category.getContacts().add(contact);
-        categoryRepository.save(category);
+
     }
 
+
     @Override
-    public void removeContactFromCategory(String username, String description, Contact contact) {
+    public void removeContactFromCategory(String username, String description) {
         validateUser(username);
 
+        Contact savedContact = contactRepository.findByUsername(username);
         Category category = getCategoryByDescription(description);
-        category.getContacts().removeIf(n -> n.getId().equals(contact.getId()));
+        category.getContacts().remove(savedContact);
         categoryRepository.save(category);
     }
 
@@ -119,7 +135,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     private void saveContactWithCategory(Category savedCategory, String username,String firstname) {
         Contact contact = new Contact();
-        contact.setCategory(savedCategory);
         contact.setUsername(username);
         contact.setFirstName(firstname);
         contactRepository.save(contact);

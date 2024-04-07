@@ -24,7 +24,7 @@ public interface CategoryService {
 
     List<Contact> getContactByCategoryDescription(String description);
 
-    void addContactToCategory(String username,String description, Contact contact);
+    void addContactToCategory(String username, String description, Contact createContactRequest);
 
-    void removeContactFromCategory(String username,String description, Contact contact);
+    void removeContactFromCategory(String username,String description);
 }

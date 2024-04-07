@@ -2,8 +2,10 @@ package africa.semicolon.data.models;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -11,7 +13,8 @@ import java.util.List;
 public class Category {
     @Id
     private String id;
-    private List<Contact> contacts;
+    @DBRef
+    private List<Contact> contacts = new ArrayList<>();
     private String description;
     private String username;
 }

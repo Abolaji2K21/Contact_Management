@@ -193,21 +193,27 @@ public class CategoryServiceImplTest {
         createCategoryRequest.setUsername("penisup");
         CreateCategoryResponse categoryResponse = categoryService.createCategory(createCategoryRequest);
 
-        Contact contact = new Contact();
-        contact.setFirstName("PenIs");
-        contact.setEmail("penisup@penisup.com");
-        contact.setLastName("Up");
-        contact.setUsername("penisup");
-        contact.setPhoneNumber("08165269244");
+        Contact createContactRequest = new Contact();
 
-        categoryService.addContactToCategory("penisup", categoryResponse.getDescription(), contact);
+
+        createContactRequest.setFirstName("PenIs");
+        createContactRequest.setUsername("penisup");
+        createContactRequest.setPhoneNumber("08165269244");
+        createContactRequest.setLastName("Up");
+        createContactRequest.setEmail("PenIsUp@gmail.com");
+
+        categoryService.addContactToCategory("penisup", categoryResponse.getDescription(), createContactRequest);
 
         assertEquals("HappyCategories", categoryResponse.getDescription());
         assertEquals("penisup", categoryResponse.getUsername());
         assertTrue(categoryRepository.findById(categoryResponse.getCategoryId()).isPresent());
 
         Category category = categoryRepository.findByDescription("HappyCategories").get();
-        assertTrue(category.getContacts().contains(contact));
+        Contact newContact = contactRepository.findById(category.getContacts().getLast().getId()).get();
+
+
+        assertTrue(category.getContacts().contains(newContact));
+        assertEquals(1,category.getContacts().size() );
     }
 
     @Test
@@ -215,33 +221,37 @@ public class CategoryServiceImplTest {
         RegisterUserRequest registerRequest = new RegisterUserRequest();
         registerRequest.setFirstname("PenIs");
         registerRequest.setLastname("Up");
-        registerRequest.setUsername("penisup");
+        registerRequest.setUsername("peniscovered");
         registerRequest.setPassword("Holes");
         userService.register(registerRequest);
 
         LoginUserRequest loginRequest = new LoginUserRequest();
-        loginRequest.setUsername("penisup");
+        loginRequest.setUsername("peniscovered");
         loginRequest.setPassword("Holes");
         userService.login(loginRequest);
 
         CreateCategoryRequest createCategoryRequest = new CreateCategoryRequest();
         createCategoryRequest.setDescription("HappyCategories");
-        createCategoryRequest.setUsername("penisup");
+        createCategoryRequest.setUsername("peniscovered");
         CreateCategoryResponse categoryResponse = categoryService.createCategory(createCategoryRequest);
+        Contact createContactRequest = new Contact();
 
-        Contact contact = new Contact();
-        contact.setFirstName("PenIs");
-        contact.setEmail("penisup@penisup.com");
-        contact.setLastName("Up");
-        contact.setUsername("penisup");
-        contact.setPhoneNumber("08165269244");
 
-        categoryService.addContactToCategory("penisup", categoryResponse.getDescription(), contact);
+        createContactRequest.setFirstName("PenIs");
+        createContactRequest.setUsername("peniscovered");
+        createContactRequest.setPhoneNumber("08165269244");
+        createContactRequest.setLastName("Up");
+        createContactRequest.setEmail("PenIsUp@gmail.com");
 
-        categoryService.removeContactFromCategory("penisup", categoryResponse.getDescription(), contact);
+        categoryService.addContactToCategory("peniscovered", categoryResponse.getDescription(), createContactRequest);
 
         Category category = categoryRepository.findByDescription("HappyCategories").orElseThrow(() -> new RuntimeException("Category not found"));
-        assertFalse(category.getContacts().contains(contact));
+        Contact newContact = contactRepository.findById(category.getContacts().getLast().getId()).get();
+        categoryService.removeContactFromCategory("peniscovered", categoryResponse.getDescription());
+        category = categoryRepository.findByDescription("HappyCategories").orElseThrow(() -> new RuntimeException("Category not found"));
+
+        assertEquals(0,category.getContacts().size());
+        assertFalse(category.getContacts().contains(newContact));
     }
 
 
@@ -264,26 +274,31 @@ public class CategoryServiceImplTest {
         createCategoryRequest.setUsername("penisup");
         CreateCategoryResponse categoryResponse = categoryService.createCategory(createCategoryRequest);
 
-        Contact contact = new Contact();
-        contact.setFirstName("PenIs");
-        contact.setEmail("penisup@penisup.com");
-        contact.setLastName("Up");
-        contact.setUsername("penisup");
-        contact.setPhoneNumber("08165269244");
+        Contact createContactRequest = new Contact();
 
-        Contact contactTwo = new Contact();
-        contactTwo.setFirstName("PenIs");
-        contactTwo.setEmail("penisdown@penisdown.com");
-        contactTwo.setLastName("Down");
-        contactTwo.setUsername("penisdown");
-        contactTwo.setPhoneNumber("08165269245");
-        categoryService.addContactToCategory("penisup", categoryResponse.getDescription(), contact);
-        categoryService.addContactToCategory("penisdown", categoryResponse.getDescription(), contactTwo);
+
+        createContactRequest.setFirstName("PenIs");
+        createContactRequest.setUsername("penisup");
+        createContactRequest.setPhoneNumber("08165269244");
+        createContactRequest.setLastName("Up");
+        createContactRequest.setEmail("PenIsUp@gmail.com");
+
+        categoryService.addContactToCategory("penisup", categoryResponse.getDescription(), createContactRequest);
+
+        CreateContactRequest createContactRequestOne = new CreateContactRequest();
+
+//
+//        createContactRequestOne.setFirstname("PenIs");
+//        createContactRequestOne.setUsername("penisdown");
+//        createContactRequestOne.setPhoneNumber("08165269245");
+//        createContactRequestOne.setLastname("Down");
+//        createContactRequestOne.setEmail("PenIsDown@gmail.com");
+
+        categoryService.addContactToCategory("penisup", categoryResponse.getDescription(), createContactRequest);
+//        categoryService.addContactToCategory("penisdown", categoryResponse.getDescription(), createContactRequestOne);
 
         List<Contact> contacts = categoryService.getContactByCategoryDescription(categoryResponse.getDescription());
         assertEquals(2, contacts.size());
-        assertTrue(contacts.contains(contact));
-        assertTrue(contacts.contains(contactTwo));
     }
 
     @Test

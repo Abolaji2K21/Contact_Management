@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ContactRepository extends MongoRepository<Contact, String> {
     Boolean existsBy(String Username, String phoneNumber);
-    Contact findBy(String username);
+    Contact findByUsername(String username);
     Contact findContactByIdAndUserId(String contactId,String userId);
 }
