@@ -12,7 +12,7 @@ import java.util.List;
 @Document("Categories")
 public class Category {
     @Id
-    private String id;
+    private String categoryId;
     @DBRef
     private List<Contact> contacts = new ArrayList<>();
     private String description;

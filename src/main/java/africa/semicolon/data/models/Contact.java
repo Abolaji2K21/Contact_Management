@@ -12,16 +12,14 @@ import java.time.LocalDateTime;
 @Document("Contacts")
 public class Contact {
     @Id
-    private String id;
+    private String contactId;
     private String username;
     private String firstName;
     private String lastName;
     private String email;
     private String phoneNumber;
-    private LocalDateTime dateTimeCreated;
     private String userId;
+    private LocalDateTime dateTimeCreated;
     private LocalDateTime dateTimeUpdated;
-    @DBRef
-    private Category category;
 }
 

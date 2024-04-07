@@ -32,7 +32,7 @@ public class Mapper {
     }
     public static CreateContactResponse mapCreateContactResponse(Contact savedContact) {
         CreateContactResponse response = new CreateContactResponse();
-        response.setContactId(savedContact.getId());
+        response.setContactId(savedContact.getContactId());
         response.setFirstName(savedContact.getFirstName());
         response.setLastName(savedContact.getLastName());
         response.setPhoneNumber(savedContact.getPhoneNumber());
@@ -54,7 +54,7 @@ public class Mapper {
 
     public static EditContactResponse mapEditContactResponse(Contact updatedContact) {
         EditContactResponse response = new EditContactResponse();
-        response.setContactId(updatedContact.getId());
+        response.setContactId(updatedContact.getContactId());
         response.setFirstName(updatedContact.getFirstName());
         response.setLastName(updatedContact.getLastName());
         response.setPhoneNumber(updatedContact.getPhoneNumber());
@@ -71,7 +71,7 @@ public class Mapper {
     }
     public static DeleteContactResponse mapDeleteContactResponse(Contact existingContact, String username) {
         DeleteContactResponse response = new DeleteContactResponse();
-        response.setContactId(existingContact.getId());
+        response.setContactId(existingContact.getContactId());
         response.setDeleted(true);
         response.setUsername(username);
 
@@ -79,14 +79,14 @@ public class Mapper {
     }
     public static CreateCategoryResponse mapCreateCategoryResponse(Category category) {
         CreateCategoryResponse response = new CreateCategoryResponse();
-        response.setCategoryId(category.getId());
+        response.setCategoryId(category.getCategoryId());
         response.setDescription(category.getDescription());
         response.setUsername(category.getUsername());
         return response;
     }
     public static EditCategoryResponse mapEditCategoryResponse(Category updatedCategory) {
         EditCategoryResponse response = new EditCategoryResponse();
-        response.setCategoryId(updatedCategory.getId());
+        response.setCategoryId(updatedCategory.getCategoryId());
         response.setDescription(updatedCategory.getDescription());
         response.setUsername(updatedCategory.getUsername());
         return response;

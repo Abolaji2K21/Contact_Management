@@ -14,6 +14,9 @@ import africa.semicolon.dtos.response.DeleteContactResponse;
 import africa.semicolon.dtos.response.EditContactResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+
 import static africa.semicolon.utils.Mapper.*;
 
 @Service
@@ -32,6 +35,7 @@ public class ContactServiceImpl implements ContactService {
         validate(createContactRequest);
         User user = findUserBy(username);
         Contact contact = mapContact(createContactRequest, username, user);
+        contact.setDateTimeCreated(LocalDateTime.now());
         Contact savedContact = contactRepository.save(contact);
         return mapCreateContactResponse(savedContact);
     }
@@ -73,10 +77,11 @@ public class ContactServiceImpl implements ContactService {
             throw new BigContactException("Username cannot be null or empty");
         }
         String phoneNumber = createContactRequest.getPhoneNumber();
-        boolean ContactExist = contactRepository.existsBy(username, phoneNumber);
-        if (ContactExist) {
-            throw new BigContactException("Contact already exists1");
-        }
+
+        boolean contactExistsByPhoneNumber = contactRepository.existsByPhoneNumber(phoneNumber);
+        if (contactExistsByPhoneNumber) {
+            throw new BigContactException("Contact already exists");
+            }
     }
 
     private void mapStatusOf(String username) {
@@ -92,7 +97,7 @@ public class ContactServiceImpl implements ContactService {
     private Contact checkingStatus(EditContactRequest editContactRequest, User user) {
         String contactId = editContactRequest.getContactId();
         String userId = user.getId();
-        Contact existingContact = contactRepository.findContactByIdAndUserId(contactId, userId);
+        Contact existingContact = contactRepository.findContactByContactIdAndUserId(contactId, userId);
         if (existingContact == null) {
             throw new BigContactException("Contact with ID " + contactId + " not found");
         }
@@ -106,7 +111,7 @@ public class ContactServiceImpl implements ContactService {
     private Contact checkingStatus(DeleteContactRequest deleteContactRequest, User user) {
         String contactId = deleteContactRequest.getContactId();
         String userId = user.getId();
-        Contact existingContact = contactRepository.findContactByIdAndUserId(contactId, userId);
+        Contact existingContact = contactRepository.findContactByContactIdAndUserId(contactId, userId);
 
         if (existingContact == null) {
             throw new BigContactException("Contact with ID " + contactId + " not found");

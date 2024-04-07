@@ -3,6 +3,7 @@ package africa.semicolon.services;
 
 import africa.semicolon.data.models.Category;
 import africa.semicolon.data.models.Contact;
+import africa.semicolon.dtos.requests.AddContactToCategoryRequest;
 import africa.semicolon.dtos.requests.CreateCategoryRequest;
 import africa.semicolon.dtos.requests.DeleteCategoryRequest;
 import africa.semicolon.dtos.requests.EditCategoryRequest;
@@ -24,7 +25,7 @@ public interface CategoryService {
 
     List<Contact> getContactByCategoryDescription(String description);
 
-    void addContactToCategory(String username, String description, Contact createContactRequest);
+//    void addContactToCategory(AddContactToCategoryRequest addContactToCategoryRequest, Contact contact);
 
-    void removeContactFromCategory(String username,String description);
+//    void removeContactFromCategory(String username,String description);
 }

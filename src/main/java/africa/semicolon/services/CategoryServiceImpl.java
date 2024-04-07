@@ -6,6 +6,7 @@ import africa.semicolon.data.models.Category;
 import africa.semicolon.data.models.Contact;
 import africa.semicolon.data.repositories.CategoryRepository;
 import africa.semicolon.data.repositories.ContactRepository;
+import africa.semicolon.dtos.requests.AddContactToCategoryRequest;
 import africa.semicolon.dtos.requests.CreateCategoryRequest;
 import africa.semicolon.dtos.requests.DeleteCategoryRequest;
 import africa.semicolon.dtos.requests.EditCategoryRequest;
@@ -85,42 +86,42 @@ public class CategoryServiceImpl implements CategoryService {
         return category.getContacts();
     }
 
-    @Override
-    public void addContactToCategory(String username, String description, Contact createContactRequest) {
-        validateUser(username);
-        Category category = getCategoryByDescription(description);
+//    @Override
+//    public void addContactToCategory(AddContactToCategoryRequest addContactToCategoryRequest, Contact contact) {
+//        validateUser(addContactToCategoryRequest.getUsername());
+//        Category category = getCategoryByDescription(addContactToCategoryRequest.getDescription());
+//
+//        List<Contact> contacts = contactRepository.findAllByUsername(addContactToCategoryRequest.getUsername());
+//
+//        if (!contacts.isEmpty()) {
+//            for (Contact savedContact : contacts) {
+//                category.getContacts().add(savedContact);
+//            }
+//            categoryRepository.save(category);
+//        } else {
+//            Contact newContact = new Contact();
+//            newContact.setUsername(addContactToCategoryRequest.getUsername());
+//            newContact.setFirstName(contact.getFirstName());
+//            newContact.setLastName(contact.getLastName());
+//            newContact.setEmail(contact.getEmail());
+//            newContact.setPhoneNumber(contact.getPhoneNumber());
+//            newContact.setDateTimeCreated(LocalDateTime.now());
+//            contactRepository.save(newContact);
+//            category.getContacts().add(newContact);
+//            categoryRepository.save(category);
+//        }
+//    }
 
-        Contact savedContact = contactRepository.findByUsername(username);
 
-        if (savedContact != null) {
-            category.getContacts().add(savedContact);
-            categoryRepository.save(category);
-        } else {
-            Contact newContact = new Contact();
-            newContact.setUsername(username);
-            newContact.setFirstName(createContactRequest.getFirstName());
-            newContact.setLastName(createContactRequest.getLastName());
-            newContact.setEmail(createContactRequest.getEmail());
-            newContact.setPhoneNumber(createContactRequest.getPhoneNumber());
-            newContact.setDateTimeCreated(LocalDateTime.now());
-            contactRepository.save(newContact);
-            category.getContacts().add(newContact);
-            categoryRepository.save(category);
-        }
-
-
-    }
-
-
-    @Override
-    public void removeContactFromCategory(String username, String description) {
-        validateUser(username);
-
-        Contact savedContact = contactRepository.findByUsername(username);
-        Category category = getCategoryByDescription(description);
-        category.getContacts().remove(savedContact);
-        categoryRepository.save(category);
-    }
+//    @Override
+//    public void removeContactFromCategory(String username, String description) {
+//        validateUser(username);
+//
+//        Contact savedContact = contactRepository.findByContactId();
+//        Category category = getCategoryByDescription(description);
+//        category.getContacts().remove(savedContact);
+//        categoryRepository.save(category);
+//    }
 
     private void validateUser(String username) {
         if (!userService.isUserRegistered(username) || !userService.isUserLoggedIn(username)) {

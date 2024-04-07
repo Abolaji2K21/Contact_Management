@@ -19,7 +19,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
-@RequestMapping("/api/Modern_Note")
+@RequestMapping("/api/Modern_Contact")
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
@@ -66,8 +66,8 @@ public class CategoryController {
         }
     }
 
-    @GetMapping("/categories/{description}/notes")
-    public ResponseEntity<?> getNotesByCategoryDescription(@PathVariable String description) {
+    @GetMapping("/categories/{description}/contact")
+    public ResponseEntity<?> getContactByCategoryDescription(@PathVariable String description) {
         try {
             List<Contact> contacts = categoryService.getContactByCategoryDescription(description);
             return new ResponseEntity<>(new ApiResponse(true, contacts), CREATED);
@@ -76,23 +76,25 @@ public class CategoryController {
         }
     }
 
-    @PatchMapping("/add_note_to_category")
-    public ResponseEntity<?> addNoteToCategory(@RequestBody AddContactToCategoryRequest request) {
-        try {
-            categoryService.addContactToCategory(request.getUsername(), request.getDescription(), request.getContact());
-            return new ResponseEntity<>(new ApiResponse(true, "Note added to category successfully"), CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ApiResponse(false, e.getMessage()), BAD_REQUEST);
-        }
-    }
-
-    @PatchMapping("/remove_note_from_category")
-    public ResponseEntity<?> removeNoteFromCategory(@RequestBody RemoveContactFromCategoryRequest request) {
-        try {
-            categoryService.removeContactFromCategory(request.getUsername(), request.getDescription());
-            return new ResponseEntity<>(new ApiResponse(true, "Note removed from category successfully"), CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ApiResponse(false, e.getMessage()), BAD_REQUEST);
-        }
-    }
+//    @PatchMapping("/add_Contact_to_category")
+//    public ResponseEntity<?> addContactToCategory(@RequestBody AddContactToCategoryRequest request) {
+//        Contact contact = new Contact();
+//        contact.setUsername(request.getUsername());
+//        try {
+//            categoryService.addContactToCategory(request, request.getContact());
+//            return new ResponseEntity<>(new ApiResponse(true, "Note added to category successfully"), CREATED);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(new ApiResponse(false, e.getMessage()), BAD_REQUEST);
+//        }
+//    }
+//
+//    @PatchMapping("/remove_Contact_from_category")
+//    public ResponseEntity<?> removeContactFromCategory(@RequestBody RemoveContactFromCategoryRequest request) {
+//        try {
+//            categoryService.removeContactFromCategory(request.getUsername(), request.getDescription());
+//            return new ResponseEntity<>(new ApiResponse(true, "Note removed from category successfully"), CREATED);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(new ApiResponse(false, e.getMessage()), BAD_REQUEST);
+//        }
+//    }
 }
