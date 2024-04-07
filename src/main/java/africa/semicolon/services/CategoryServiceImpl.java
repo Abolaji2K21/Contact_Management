@@ -6,10 +6,7 @@ import africa.semicolon.data.models.Category;
 import africa.semicolon.data.models.Contact;
 import africa.semicolon.data.repositories.CategoryRepository;
 import africa.semicolon.data.repositories.ContactRepository;
-import africa.semicolon.dtos.requests.AddContactToCategoryRequest;
-import africa.semicolon.dtos.requests.CreateCategoryRequest;
-import africa.semicolon.dtos.requests.DeleteCategoryRequest;
-import africa.semicolon.dtos.requests.EditCategoryRequest;
+import africa.semicolon.dtos.requests.*;
 import africa.semicolon.dtos.response.CreateCategoryResponse;
 import africa.semicolon.dtos.response.DeleteCategoryResponse;
 import africa.semicolon.dtos.response.EditCategoryResponse;
@@ -86,42 +83,38 @@ public class CategoryServiceImpl implements CategoryService {
         return category.getContacts();
     }
 
-//    @Override
-//    public void addContactToCategory(AddContactToCategoryRequest addContactToCategoryRequest, Contact contact) {
-//        validateUser(addContactToCategoryRequest.getUsername());
-//        Category category = getCategoryByDescription(addContactToCategoryRequest.getDescription());
-//
-//        List<Contact> contacts = contactRepository.findAllByUsername(addContactToCategoryRequest.getUsername());
-//
-//        if (!contacts.isEmpty()) {
-//            for (Contact savedContact : contacts) {
-//                category.getContacts().add(savedContact);
-//            }
-//            categoryRepository.save(category);
-//        } else {
-//            Contact newContact = new Contact();
-//            newContact.setUsername(addContactToCategoryRequest.getUsername());
-//            newContact.setFirstName(contact.getFirstName());
-//            newContact.setLastName(contact.getLastName());
-//            newContact.setEmail(contact.getEmail());
-//            newContact.setPhoneNumber(contact.getPhoneNumber());
-//            newContact.setDateTimeCreated(LocalDateTime.now());
-//            contactRepository.save(newContact);
-//            category.getContacts().add(newContact);
-//            categoryRepository.save(category);
-//        }
-//    }
+    @Override
+    public void addContactToCategory(AddContactToCategoryRequest request) {
+        Optional<Contact> contactOptional = contactRepository.findByContactId(request.getContactId());
+        Optional<Category> categoryOptional = categoryRepository.findByCategoryId(request.getCategoryId());
+        if (contactOptional.isEmpty()) {
+            throw new BigContactException("Contact not found");
+        }
+        if (categoryOptional.isEmpty()) {
+            throw new BigContactException("Category not found");
+        }
+
+        Contact contact = contactOptional.get();
+        Category category = categoryOptional.get();
+        category.getContacts().add(contact);
+        categoryRepository.save(category);
+    }
 
 
-//    @Override
-//    public void removeContactFromCategory(String username, String description) {
-//        validateUser(username);
-//
-//        Contact savedContact = contactRepository.findByContactId();
-//        Category category = getCategoryByDescription(description);
-//        category.getContacts().remove(savedContact);
-//        categoryRepository.save(category);
-//    }
+    @Override
+    public void removeContactFromCategory(RemoveContactFromCategoryRequest request) {
+        String contactId = request.getContactId();
+        String categoryId = request.getCategoryId();
+
+        Category category = categoryRepository.findByCategoryId(categoryId)
+                .orElseThrow(() -> new BigContactException("Category not found"));
+
+        Contact contact = contactRepository.findByContactId(contactId)
+                .orElseThrow(() -> new BigContactException("Contact not found"));
+
+        category.getContacts().removeIf(newContact -> contact.getContactId().equals(contactId));
+        categoryRepository.save(category);
+    }
 
     private void validateUser(String username) {
         if (!userService.isUserRegistered(username) || !userService.isUserLoggedIn(username)) {

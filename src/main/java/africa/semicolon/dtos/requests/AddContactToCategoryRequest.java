@@ -1,11 +1,13 @@
 package africa.semicolon.dtos.requests;
 
 import africa.semicolon.data.models.Contact;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class AddContactToCategoryRequest {
-    private String username;
-    private String description;
-    private Contact contact;
+    private String contactId;
+    private String categoryId;
+
 }
