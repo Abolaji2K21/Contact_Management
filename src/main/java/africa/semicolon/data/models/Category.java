@@ -15,6 +15,9 @@ public class Category {
     private String categoryId;
     @DBRef
     private List<Contact> contacts = new ArrayList<>();
-    private String description;
-    private String username;
+    private String categoryName;
+
+//    private String description;
+//    private String username;
+
 }

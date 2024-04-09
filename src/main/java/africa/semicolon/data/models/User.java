@@ -23,4 +23,6 @@ public class User {
     private String password;
     private LocalDateTime dateCreated = LocalDateTime.now();
     private boolean loggedIn;
+    private List<Contact> contacts;
+
 }
