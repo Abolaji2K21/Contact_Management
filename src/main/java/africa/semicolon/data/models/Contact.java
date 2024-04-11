@@ -17,12 +17,10 @@ public class Contact {
     private String userId;
 
 
-
     private String firstName;
     private String lastName;
     private String phoneNumber;
     private String category;
-
 
     private LocalDateTime dateTimeCreated;
     private LocalDateTime dateTimeUpdated;
