@@ -13,11 +13,11 @@ import java.time.LocalDateTime;
 public class Contact {
     @Id
     private String contactId;
-    private String username;
     private String firstName;
     private String lastName;
-    private String email;
+    private String username;
     private String phoneNumber;
+    private String email;
     private String userId;
     private LocalDateTime dateTimeCreated;
     private LocalDateTime dateTimeUpdated;
