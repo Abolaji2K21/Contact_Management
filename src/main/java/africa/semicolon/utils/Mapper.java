@@ -1,7 +1,7 @@
 package africa.semicolon.utils;
 
 import africa.semicolon.contactException.BigContactException;
-import africa.semicolon.data.models.Category;
+//import africa.semicolon.data.models.Category;
 import africa.semicolon.data.models.Contact;
 import africa.semicolon.data.models.User;
 import africa.semicolon.dtos.requests.CreateContactRequest;
@@ -26,7 +26,7 @@ public class Mapper {
     public static RegisterUserResponse map(User user) {
         RegisterUserResponse registerUserResponse = new RegisterUserResponse();
         registerUserResponse.setUsername(user.getUsername());
-        registerUserResponse.setId(user.getId());
+        registerUserResponse.setUserId(user.getUserId());
         registerUserResponse.setDateRegistered(DateTimeFormatter.ofPattern("dd-MM-yyyy, hh:mm:ss").format(user.getDateCreated()));
         return registerUserResponse;
     }
@@ -48,7 +48,7 @@ public class Mapper {
         contact.setFirstName(createContactRequest.getFirstname());
         contact.setLastName(createContactRequest.getLastname());
         contact.setEmail(createContactRequest.getEmail());
-        contact.setUserId(user.getId());
+        contact.setUserId(user.getUserId());
         return contact;
     }
 
@@ -77,19 +77,30 @@ public class Mapper {
 
         return response;
     }
-    public static CreateCategoryResponse mapCreateCategoryResponse(Category category) {
-        CreateCategoryResponse response = new CreateCategoryResponse();
-        response.setCategoryId(category.getCategoryId());
-        response.setDescription(category.getDescription());
-        response.setUsername(category.getUsername());
+
+    public static UpdateUserResponse mapUpdateUserResponse(User user) {
+        UpdateUserResponse response = new UpdateUserResponse();
+        response.setUserId(user.getUserId());
+        response.setUsername(user.getUsername());
+        response.setFirstname(user.getFirstName());
+        response.setLastname(user.getLastName());
+        response.setDateUpdated(user.getDateUpdated().toString());
+        response.setLoggedIn(user.isLoggedIn());
         return response;
     }
-    public static EditCategoryResponse mapEditCategoryResponse(Category updatedCategory) {
-        EditCategoryResponse response = new EditCategoryResponse();
-        response.setCategoryId(updatedCategory.getCategoryId());
-        response.setDescription(updatedCategory.getDescription());
-        response.setUsername(updatedCategory.getUsername());
-        return response;
-    }
+//    public static CreateCategoryResponse mapCreateCategoryResponse(Category category) {
+//        CreateCategoryResponse response = new CreateCategoryResponse();
+//        response.setCategoryId(category.getCategoryId());
+//        response.setDescription(category.getDescription());
+//        response.setUsername(category.getUsername());
+//        return response;
+//    }
+//    public static EditCategoryResponse mapEditCategoryResponse(Category updatedCategory) {
+//        EditCategoryResponse response = new EditCategoryResponse();
+//        response.setCategoryId(updatedCategory.getCategoryId());
+//        response.setDescription(updatedCategory.getDescription());
+//        response.setUsername(updatedCategory.getUsername());
+//        return response;
+//    }
 
 }

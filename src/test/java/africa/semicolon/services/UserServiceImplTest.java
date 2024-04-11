@@ -1,21 +1,26 @@
 package africa.semicolon.services;
 
 import africa.semicolon.contactException.BigContactException;
+import africa.semicolon.data.models.User;
 import africa.semicolon.data.repositories.UserRepository;
 import africa.semicolon.dtos.requests.LoginUserRequest;
 import africa.semicolon.dtos.requests.LogoutUserRequest;
 import africa.semicolon.dtos.requests.RegisterUserRequest;
+import africa.semicolon.dtos.requests.UpdateUserRequest;
 import africa.semicolon.dtos.response.LoginUserResponse;
 import africa.semicolon.dtos.response.LogoutUserResponse;
+import africa.semicolon.dtos.response.RegisterUserResponse;
+import africa.semicolon.dtos.response.UpdateUserResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Optional;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class UserServiceImplTest {
@@ -197,6 +202,36 @@ class UserServiceImplTest {
         loginRequest.setPassword("Holes");
 
         assertThrows(BigContactException.class, () -> userService.login(loginRequest));
+    }
+
+    @Test
+    void testUpdateUserProfile() {
+        RegisterUserRequest registerRequest = new RegisterUserRequest();
+        registerRequest.setFirstname("PenIs");
+        registerRequest.setLastname("Up");
+        registerRequest.setUsername("PenIsUp");
+        registerRequest.setPassword("Holes");
+        RegisterUserResponse userResponse = userService.register(registerRequest);
+
+        UpdateUserRequest updateRequest = new UpdateUserRequest();
+        updateRequest.setUserId(userResponse.getUserId());
+        updateRequest.setFirstname("Rename");
+        updateRequest.setLastname("Pen");
+        updateRequest.setUsername("penisup");
+
+        UpdateUserResponse response = userService.updateUserProfile(updateRequest);
+
+        Optional<User> updatedUserOptional = userRepository.findById(userResponse.getUserId());
+        assertTrue(updatedUserOptional.isPresent());
+        User updatedUser = updatedUserOptional.get();
+
+        assertEquals("penisup", response.getUsername());
+        assertEquals("Rename", response.getFirstname());
+        assertEquals("Pen", response.getLastname());
+        assertEquals(updatedUser.getUserId(), response.getUserId());
+        assertEquals(updatedUser.getUsername(), response.getUsername());
+        assertEquals(updatedUser.getFirstName(), response.getFirstname());
+        assertEquals(updatedUser.getLastName(), response.getLastname());
     }
 
 

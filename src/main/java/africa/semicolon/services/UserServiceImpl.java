@@ -8,14 +8,19 @@ import africa.semicolon.data.models.User;
 import africa.semicolon.dtos.requests.LoginUserRequest;
 import africa.semicolon.dtos.requests.LogoutUserRequest;
 import africa.semicolon.dtos.requests.RegisterUserRequest;
+import africa.semicolon.dtos.requests.UpdateUserRequest;
 import africa.semicolon.dtos.response.LoginUserResponse;
 import africa.semicolon.dtos.response.LogoutUserResponse;
 import africa.semicolon.dtos.response.RegisterUserResponse;
 import africa.semicolon.data.repositories.UserRepository;
+import africa.semicolon.dtos.response.UpdateUserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 import static africa.semicolon.utils.Mapper.map;
+import static africa.semicolon.utils.Mapper.mapUpdateUserResponse;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -51,7 +56,7 @@ public class UserServiceImpl implements UserService {
 
         user.setLoggedIn(true);
         userRepository.save(user);
-        return new LoginUserResponse(user.getId(), user.getUsername().toLowerCase(),user.isLoggedIn());    }
+        return new LoginUserResponse(user.getUserId(), user.getUsername().toLowerCase(),user.isLoggedIn());    }
 
     @Override
     public LogoutUserResponse logout(LogoutUserRequest logoutUserRequest) {
@@ -62,9 +67,26 @@ public class UserServiceImpl implements UserService {
         } else {
 //            user.setLoggedIn(false);
             userRepository.save(user);
-            return new LogoutUserResponse(user.getId(), user.getUsername(),false);
+            return new LogoutUserResponse(user.getUserId(), user.getUsername(),false);
         }
     }
+
+    @Override
+    public UpdateUserResponse updateUserProfile(UpdateUserRequest request) {
+        String userId = request.getUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
+
+        user.setFirstName(request.getFirstname());
+        user.setLastName(request.getLastname());
+        user.setUsername(request.getUsername());
+        user.setDateUpdated(LocalDateTime.now());
+        userRepository.save(user);
+
+        return mapUpdateUserResponse(user);
+
+    }
+
 
     @Override
     public User findUserBy(String username) {

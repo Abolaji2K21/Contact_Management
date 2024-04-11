@@ -96,13 +96,13 @@ public class ContactServiceImpl implements ContactService {
 
     private Contact checkingStatus(EditContactRequest editContactRequest, User user) {
         String contactId = editContactRequest.getContactId();
-        String userId = user.getId();
+        String userId = user.getUserId();
         Contact existingContact = contactRepository.findContactByContactIdAndUserId(contactId, userId);
         if (existingContact == null) {
             throw new BigContactException("Contact with ID " + contactId + " not found");
         }
 
-        if (!existingContact.getUserId().equals(user.getId())) {
+        if (!existingContact.getUserId().equals(user.getUserId())) {
             throw new BigContactException("You are not authorized to edit this contact");
         }
         return existingContact;
@@ -110,7 +110,7 @@ public class ContactServiceImpl implements ContactService {
 
     private Contact checkingStatus(DeleteContactRequest deleteContactRequest, User user) {
         String contactId = deleteContactRequest.getContactId();
-        String userId = user.getId();
+        String userId = user.getUserId();
         Contact existingContact = contactRepository.findContactByContactIdAndUserId(contactId, userId);
 
         if (existingContact == null) {
