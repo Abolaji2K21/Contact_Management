@@ -247,9 +247,70 @@ class ContactControllerTest {
         assertIsSuccessful(createContactResponseEntity, false);
         assertThat(createContactResponseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 
-
-
     }
+
+    @Test
+    void testGetAllContactsByUserId_isSuccessful() {
+        RegisterUserRequest registerRequest = new RegisterUserRequest();
+        registerRequest.setFirstname("penIs");
+        registerRequest.setLastname("Up");
+        registerRequest.setUsername("penisup");
+        registerRequest.setPassword("Holes");
+        ResponseEntity<?> registrationResponseEntity = userController.registerUser(registerRequest);
+        RegisterUserResponse registrationResponse = (RegisterUserResponse) ((ApiResponse) registrationResponseEntity.getBody()).getData();
+        assertNotNull(registrationResponse);
+        String userId = registrationResponse.getUserId();
+
+        LoginUserRequest loginRequest = new LoginUserRequest();
+        loginRequest.setUsername("penisup");
+        loginRequest.setPassword("Holes");
+        userController.login(loginRequest);
+
+        CreateContactRequest createContactRequest = new CreateContactRequest();
+        createContactRequest.setUsername("penisup");
+        createContactRequest.setPhoneNumber("08165269244");
+        createContactRequest.setFirstname("PenIs");
+        createContactRequest.setLastname("Up");
+        createContactRequest.setCategory("PenIsUpCategory");
+        createContactRequest.setUserId(userId);
+        controller.createContact(createContactRequest);
+
+        ResponseEntity<?> responseEntity = controller.getAllContactsByUserId(userId);
+        assertIsSuccessful(responseEntity, true);
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
+    }
+
+    @Test
+    void testGetAllContactsByCategory_isSuccessful() {
+        RegisterUserRequest registerRequest = new RegisterUserRequest();
+        registerRequest.setFirstname("penIs");
+        registerRequest.setLastname("Up");
+        registerRequest.setUsername("penisup");
+        registerRequest.setPassword("Holes");
+        ResponseEntity<?> registrationResponseEntity = userController.registerUser(registerRequest);
+        RegisterUserResponse registrationResponse = (RegisterUserResponse) ((ApiResponse) registrationResponseEntity.getBody()).getData();
+        assertNotNull(registrationResponse);
+        String userId = registrationResponse.getUserId();
+
+        LoginUserRequest loginRequest = new LoginUserRequest();
+        loginRequest.setUsername("penisup");
+        loginRequest.setPassword("Holes");
+        userController.login(loginRequest);
+
+        CreateContactRequest createContactRequest = new CreateContactRequest();
+        createContactRequest.setUsername("penisup");
+        createContactRequest.setPhoneNumber("08165269244");
+        createContactRequest.setFirstname("PenIs");
+        createContactRequest.setLastname("Up");
+        createContactRequest.setCategory("PenIsUpCategory");
+        createContactRequest.setUserId(userId);
+        controller.createContact(createContactRequest);
+
+        ResponseEntity<?> responseEntity = controller.getAllContactsByCategory(userId, "PenIsUpCategory");
+        assertIsSuccessful(responseEntity, true);
+        assertThat(responseEntity.getStatusCode(), is(HttpStatus.CREATED));
+    }
+
 
 
     private void assertIsSuccessful(ResponseEntity<?> response, boolean expected) {
