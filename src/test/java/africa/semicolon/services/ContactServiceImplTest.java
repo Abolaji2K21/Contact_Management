@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -290,5 +291,96 @@ public class ContactServiceImplTest {
 
         assertThrows(BigContactException.class, () -> contactService.deleteContactForUser(deleteContactRequest));
     }
+    @Test
+    void testGetAllContactsByUserId_WhenUserExistsAndHasContacts() {
+        RegisterUserRequest registerRequest = new RegisterUserRequest();
+        registerRequest.setFirstname("penIs");
+        registerRequest.setLastname("Up");
+        registerRequest.setUsername("penisup");
+        registerRequest.setPassword("Holes");
+        RegisterUserResponse userResponse = userService.register(registerRequest);
+
+        LoginUserRequest loginRequest = new LoginUserRequest();
+        loginRequest.setUsername("penisup");
+        loginRequest.setPassword("Holes");
+        userService.login(loginRequest);
+
+        CreateContactRequest createContactRequest = new CreateContactRequest();
+        createContactRequest.setUsername("penisup");
+        createContactRequest.setPhoneNumber("08165269244");
+        createContactRequest.setFirstname("PenIs");
+        createContactRequest.setLastname("Up");
+        createContactRequest.setCategory("PenIsUpCategory");
+        createContactRequest.setUserId(userResponse.getUserId());
+        contactService.createContactForUser(createContactRequest);
+
+        Optional<Contact> contacts = contactService.getAllContactsByUserId(userResponse.getUserId());
+        assertTrue(contacts.isPresent());
+//        assertEquals(1, contacts.get().);
+    }
+
+    @Test
+    void testGetAllContactsByUserId_WhenUserExistsButHasNoContacts() {
+        RegisterUserRequest registerRequest = new RegisterUserRequest();
+        registerRequest.setFirstname("penIs");
+        registerRequest.setLastname("Up");
+        registerRequest.setUsername("penisup");
+        registerRequest.setPassword("Holes");
+        RegisterUserResponse userResponse = userService.register(registerRequest);
+
+        Optional<Contact> contacts = contactService.getAllContactsByUserId(userResponse.getUserId());
+        assertTrue(contacts.isEmpty());
+    }
+
+    @Test
+    void testGetAllContactsByUserId_WhenUserDoesNotExist() {
+        assertThrows(UserNotFoundException.class, () -> contactService.getAllContactsByUserId("invalidUserId"));
+    }
+
+    @Test
+    void testGetAllContactsByCategory_WhenUserExistsAndHasContacts() {
+        RegisterUserRequest registerRequest = new RegisterUserRequest();
+        registerRequest.setFirstname("penIs");
+        registerRequest.setLastname("Up");
+        registerRequest.setUsername("penisup");
+        registerRequest.setPassword("Holes");
+        RegisterUserResponse userResponse = userService.register(registerRequest);
+
+        LoginUserRequest loginRequest = new LoginUserRequest();
+        loginRequest.setUsername("penisup");
+        loginRequest.setPassword("Holes");
+        userService.login(loginRequest);
+
+        CreateContactRequest createContactRequest = new CreateContactRequest();
+        createContactRequest.setUsername("penisup");
+        createContactRequest.setPhoneNumber("08165269244");
+        createContactRequest.setFirstname("PenIs");
+        createContactRequest.setLastname("Up");
+        createContactRequest.setCategory("PenIsUpCategory");
+        createContactRequest.setUserId(userResponse.getUserId());
+        contactService.createContactForUser(createContactRequest);
+
+        List<Contact> contacts = contactService.getAllContactsByCategory(userResponse.getUserId(), "PenIsUpCategory");
+        assertEquals(1, contacts.size());
+    }
+
+    @Test
+    void testGetAllContactsByCategory_WhenUserExistsButHasNoContacts() {
+        RegisterUserRequest registerRequest = new RegisterUserRequest();
+        registerRequest.setFirstname("penIs");
+        registerRequest.setLastname("Up");
+        registerRequest.setUsername("penisup");
+        registerRequest.setPassword("Holes");
+        RegisterUserResponse userResponse = userService.register(registerRequest);
+
+        List<Contact> contacts = contactService.getAllContactsByCategory(userResponse.getUserId(), "PenIsUpCategory");
+        assertTrue(contacts.isEmpty());
+    }
+
+    @Test
+    void testGetAllContactsByCategory_WhenUserDoesNotExist() {
+        assertThrows(UserNotFoundException.class, () -> contactService.getAllContactsByCategory("invalidUserId", "PenIsUpCategory"));
+    }
+
 
 }
