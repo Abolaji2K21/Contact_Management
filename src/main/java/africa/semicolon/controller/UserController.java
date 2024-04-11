@@ -5,10 +5,8 @@ import africa.semicolon.contactException.BigContactException;
 import africa.semicolon.dtos.requests.LoginUserRequest;
 import africa.semicolon.dtos.requests.LogoutUserRequest;
 import africa.semicolon.dtos.requests.RegisterUserRequest;
-import africa.semicolon.dtos.response.ApiResponse;
-import africa.semicolon.dtos.response.LoginUserResponse;
-import africa.semicolon.dtos.response.LogoutUserResponse;
-import africa.semicolon.dtos.response.RegisterUserResponse;
+import africa.semicolon.dtos.requests.UpdateUserRequest;
+import africa.semicolon.dtos.response.*;
 import africa.semicolon.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +53,17 @@ public class UserController {
         }
     }
 
+    @PatchMapping("/update")
+    public ResponseEntity<?> updateUserProfile(@RequestBody UpdateUserRequest request) {
+
+            try{
+                UpdateUserResponse result = userService.updateUserProfile(request);
+                return new ResponseEntity<>(new ApiResponse(true,result), CREATED);
+            }
+            catch (BigContactException message){
+                return new ResponseEntity<>(new ApiResponse(false, message.getMessage()), BAD_REQUEST);
+            }
+    }
 
 
 }
