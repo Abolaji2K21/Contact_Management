@@ -11,8 +11,10 @@ import java.util.Optional;
 public interface ContactRepository extends MongoRepository<Contact, String> {
     Boolean existsByPhoneNumber(String phoneNumber);
     Contact findContactByContactIdAndUserId(String contactId, String userId);
+    List<Contact> findAllByUserIdAndCategory(String userId, String category);
     List<Contact> findAllByUsername(String username);
-    Optional<Contact> findByContactId(String contactId);
+    Optional<Contact> findByUserId(String userId);
+    Optional<Contact> findByCategory(String category);
 
 
 }

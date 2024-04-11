@@ -9,13 +9,20 @@ import africa.semicolon.dtos.response.CreateContactResponse;
 import africa.semicolon.dtos.response.DeleteContactResponse;
 import africa.semicolon.dtos.response.EditContactResponse;
 
-public interface ContactService {
-    CreateContactResponse createContact(CreateContactRequest createContactRequest);
+import java.util.List;
+import java.util.Optional;
 
-    EditContactResponse editContact(EditContactRequest editContactRequest);
+public interface ContactService {
+    CreateContactResponse createContactForUser(CreateContactRequest createContactRequest);
+
+    EditContactResponse editContactForUser(EditContactRequest editContactRequest);
 
     User findUserBy(String username);
 
-    DeleteContactResponse deleteContact(DeleteContactRequest deleteContactRequest);
+    DeleteContactResponse deleteContactForUser(DeleteContactRequest deleteContactRequest);
+    Optional<Contact> getAllContactsByUserId(String userId);
+
+    List<Contact> getAllContactsByCategory(String userId, String category);
+
 
 }

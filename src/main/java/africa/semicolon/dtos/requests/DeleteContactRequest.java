@@ -6,6 +6,8 @@ import lombok.Data;
 public class DeleteContactRequest {
     private String username;
     private String phoneNumber;
-    private String email;
+    private String category;
     private String contactId;
+    private String userId;
+
 }

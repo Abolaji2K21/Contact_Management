@@ -10,6 +10,7 @@ import africa.semicolon.dtos.requests.*;
 import africa.semicolon.dtos.response.CreateContactResponse;
 import africa.semicolon.dtos.response.DeleteContactResponse;
 import africa.semicolon.dtos.response.EditContactResponse;
+import africa.semicolon.dtos.response.RegisterUserResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,9 +49,9 @@ public class ContactServiceImplTest {
         createContactRequest.setPhoneNumber("08165269244");
         createContactRequest.setFirstname("PenIs");
         createContactRequest.setLastname("Up");
-        createContactRequest.setEmail("PenIsUp@gmail.com");
+        createContactRequest.setCategory("PenIsUpCategory");
 
-        assertThrows(BigContactException.class, () -> contactService.createContact(createContactRequest));
+        assertThrows(BigContactException.class, () -> contactService.createContactForUser(createContactRequest));
     }
 
     @Test
@@ -67,9 +68,9 @@ public class ContactServiceImplTest {
         createContactRequest.setPhoneNumber("08165269244");
         createContactRequest.setFirstname("PenIs");
         createContactRequest.setLastname("Up");
-        createContactRequest.setEmail("PenIsUp@gmail.com");
+        createContactRequest.setCategory("PenIsUpCategory");
 
-        assertThrows(BigContactException.class, () -> contactService.createContact(createContactRequest));
+        assertThrows(BigContactException.class, () -> contactService.createContactForUser(createContactRequest));
     }
 
     @Test
@@ -79,7 +80,7 @@ public class ContactServiceImplTest {
         registerRequest.setLastname("Up");
         registerRequest.setUsername("penisup");
         registerRequest.setPassword("Holes");
-        userService.register(registerRequest);
+        RegisterUserResponse userResponse = userService.register(registerRequest);
 
         LoginUserRequest loginRequest = new LoginUserRequest();
         loginRequest.setUsername("penisup");
@@ -91,14 +92,14 @@ public class ContactServiceImplTest {
         createContactRequest.setPhoneNumber("08165269244");
         createContactRequest.setFirstname("PenIs");
         createContactRequest.setLastname("Up");
-        createContactRequest.setEmail("PenIsUp@gmail.com");
+        createContactRequest.setCategory("PenIsUpCategory");
+        createContactRequest.setUserId(userResponse.getUserId());
 
-
-        CreateContactResponse response = contactService.createContact(createContactRequest);
+        CreateContactResponse response = contactService.createContactForUser(createContactRequest);
         assertEquals("08165269244", response.getPhoneNumber());
         assertEquals("PenIs", response.getFirstName());
         assertEquals("Up", response.getLastName());
-        assertEquals("PenIsUp@gmail.com", response.getEmail());
+        assertEquals("PenIsUpCategory", response.getCategory());
     }
 
     @Test
@@ -109,10 +110,10 @@ public class ContactServiceImplTest {
         editContactRequest.setPhoneNumber("08165269244");
         editContactRequest.setFirstname("PenIs");
         editContactRequest.setLastname("Up");
-        editContactRequest.setEmail("PenIsUp@gmail.com");
+        editContactRequest.setCategory("PenIsUpCategory");
 
 
-        assertThrows(BigContactException.class, () -> contactService.editContact(editContactRequest));
+        assertThrows(BigContactException.class, () -> contactService.editContactForUser(editContactRequest));
     }
 
     @Test
@@ -122,7 +123,7 @@ public class ContactServiceImplTest {
         registerRequest.setLastname("Up");
         registerRequest.setUsername("penisup");
         registerRequest.setPassword("Holes");
-        userService.register(registerRequest);
+        RegisterUserResponse  userResponse = userService.register(registerRequest);
 
         LoginUserRequest loginRequest = new LoginUserRequest();
         loginRequest.setUsername("penisup");
@@ -134,8 +135,9 @@ public class ContactServiceImplTest {
         createContactRequest.setPhoneNumber("08165269244");
         createContactRequest.setFirstname("PenIs");
         createContactRequest.setLastname("Up");
-        createContactRequest.setEmail("PenIsUp@gmail.com");
-        CreateContactResponse response = contactService.createContact(createContactRequest);
+        createContactRequest.setCategory("PenIsUpCategory");
+        createContactRequest.setUserId(userResponse.getUserId());
+        CreateContactResponse response = contactService.createContactForUser(createContactRequest);
 
         EditContactRequest editContactRequest = new EditContactRequest();
         editContactRequest.setUsername("penisdown");
@@ -143,9 +145,10 @@ public class ContactServiceImplTest {
         editContactRequest.setPhoneNumber("08165269244");
         editContactRequest.setFirstname("PenIs");
         editContactRequest.setLastname("Down");
-        editContactRequest.setEmail("PenIsUp@gmail.com");
+        editContactRequest.setCategory("PenIsUpCategory");
+        editContactRequest.setUserId("fake user");
 
-        assertThrows(BigContactException.class, () -> contactService.editContact(editContactRequest));
+        assertThrows(BigContactException.class, () -> contactService.editContactForUser(editContactRequest));
     }
 
     @Test
@@ -155,7 +158,7 @@ public class ContactServiceImplTest {
         registerRequest.setLastname("Up");
         registerRequest.setUsername("penisup");
         registerRequest.setPassword("Holes");
-        userService.register(registerRequest);
+        RegisterUserResponse userResponse = userService.register(registerRequest);
 
         LoginUserRequest loginRequest = new LoginUserRequest();
         loginRequest.setUsername("penisup");
@@ -167,8 +170,9 @@ public class ContactServiceImplTest {
         createContactRequest.setPhoneNumber("08165269244");
         createContactRequest.setFirstname("PenIs");
         createContactRequest.setLastname("Up");
-        createContactRequest.setEmail("PenIsUp@gmail.com");
-        CreateContactResponse response = contactService.createContact(createContactRequest);
+        createContactRequest.setCategory("PenIsUpCategory");
+        createContactRequest.setUserId(userResponse.getUserId());
+        CreateContactResponse response = contactService.createContactForUser(createContactRequest);
 
         EditContactRequest editContactRequest = new EditContactRequest();
         editContactRequest.setUsername("penisup");
@@ -176,15 +180,15 @@ public class ContactServiceImplTest {
         editContactRequest.setPhoneNumber("08165269244");
         editContactRequest.setFirstname("PenIs");
         editContactRequest.setLastname("Down");
-        editContactRequest.setEmail("PenIsUp@gmail.com");
+        editContactRequest.setCategory("PenIsUpCategory");
+        editContactRequest.setUserId(userResponse.getUserId());
 
-
-        EditContactResponse editContactResponse = contactService.editContact(editContactRequest);
+        EditContactResponse editContactResponse = contactService.editContactForUser(editContactRequest);
         assertEquals(response.getContactId(), editContactResponse.getContactId());
         assertEquals("08165269244", editContactResponse.getPhoneNumber());
         assertEquals("PenIs", editContactResponse.getFirstName());
         assertEquals("Down", editContactResponse.getLastName());
-        assertEquals("PenIsUp@gmail.com", editContactResponse.getEmail());
+        assertEquals("PenIsUpCategory", editContactResponse.getCategory());
     }
 
     @Test
@@ -193,7 +197,7 @@ public class ContactServiceImplTest {
         deleteContactRequest.setUsername("penisup");
         deleteContactRequest.setContactId("theyplaymyfans");
 
-        assertThrows(BigContactException.class, () -> contactService.deleteContact(deleteContactRequest));
+        assertThrows(BigContactException.class, () -> contactService.deleteContactForUser(deleteContactRequest));
     }
 
     @Test
@@ -209,7 +213,7 @@ public class ContactServiceImplTest {
         deleteContactRequest.setUsername("penisup");
         deleteContactRequest.setContactId("Theyplaymyfans");
 
-        assertThrows(BigContactException.class, () -> contactService.deleteContact(deleteContactRequest));
+        assertThrows(BigContactException.class, () -> contactService.deleteContactForUser(deleteContactRequest));
     }
 
     @Test
@@ -219,7 +223,7 @@ public class ContactServiceImplTest {
         registerRequest.setLastname("Up");
         registerRequest.setUsername("penisup");
         registerRequest.setPassword("Holes");
-        userService.register(registerRequest);
+        RegisterUserResponse userResponse = userService.register(registerRequest);
 
         LoginUserRequest loginRequest = new LoginUserRequest();
         loginRequest.setUsername("penisup");
@@ -231,14 +235,15 @@ public class ContactServiceImplTest {
         createContactRequest.setPhoneNumber("08165269244");
         createContactRequest.setFirstname("PenIs");
         createContactRequest.setLastname("Up");
-        createContactRequest.setEmail("PenIsUp@gmail.com");
-        CreateContactResponse response = contactService.createContact(createContactRequest);
+        createContactRequest.setCategory("PenIsUpCategory");
+        createContactRequest.setUserId(userResponse.getUserId());
+        CreateContactResponse response = contactService.createContactForUser(createContactRequest);
 
         DeleteContactRequest deleteContactRequest = new DeleteContactRequest();
         deleteContactRequest.setUsername("penisup");
         deleteContactRequest.setContactId(response.getContactId());
-
-        DeleteContactResponse deleteContactResponse = contactService.deleteContact(deleteContactRequest);
+        deleteContactRequest.setUserId(userResponse.getUserId());
+        DeleteContactResponse deleteContactResponse = contactService.deleteContactForUser(deleteContactRequest);
         assertEquals(response.getContactId(), deleteContactResponse.getContactId());
         assertTrue(deleteContactResponse.isDeleted());
     }
@@ -250,7 +255,7 @@ public class ContactServiceImplTest {
         registerRequest.setLastname("Up");
         registerRequest.setUsername("penisup");
         registerRequest.setPassword("Holes");
-        userService.register(registerRequest);
+        RegisterUserResponse userResponse = userService.register(registerRequest);
 
         LoginUserRequest loginRequest = new LoginUserRequest();
         loginRequest.setUsername("penisup");
@@ -262,8 +267,9 @@ public class ContactServiceImplTest {
         createContactRequest.setPhoneNumber("08165269244");
         createContactRequest.setFirstname("PenIs");
         createContactRequest.setLastname("Up");
-        createContactRequest.setEmail("PenIsUp@gmail.com");
-        CreateContactResponse response = contactService.createContact(createContactRequest);
+        createContactRequest.setCategory("PenIsUpCategory");
+        createContactRequest.setUserId(userResponse.getUserId());
+        CreateContactResponse response = contactService.createContactForUser(createContactRequest);
 
         RegisterUserRequest registerRequest2 = new RegisterUserRequest();
         registerRequest2.setFirstname("pen");
@@ -280,8 +286,9 @@ public class ContactServiceImplTest {
         DeleteContactRequest deleteContactRequest = new DeleteContactRequest();
         deleteContactRequest.setUsername("penisdown");
         deleteContactRequest.setContactId(response.getContactId());
+        deleteContactRequest.setUserId("wrongPen");
 
-        assertThrows(BigContactException.class, () -> contactService.deleteContact(deleteContactRequest));
+        assertThrows(BigContactException.class, () -> contactService.deleteContactForUser(deleteContactRequest));
     }
 
 }

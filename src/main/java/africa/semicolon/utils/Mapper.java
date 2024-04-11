@@ -36,7 +36,7 @@ public class Mapper {
         response.setFirstName(savedContact.getFirstName());
         response.setLastName(savedContact.getLastName());
         response.setPhoneNumber(savedContact.getPhoneNumber());
-        response.setEmail(savedContact.getEmail());
+        response.setCategory(savedContact.getCategory());
         response.setDateCreated(String.valueOf(savedContact.getDateTimeCreated()));
         return response;
     }
@@ -47,7 +47,7 @@ public class Mapper {
         contact.setPhoneNumber(createContactRequest.getPhoneNumber());
         contact.setFirstName(createContactRequest.getFirstname());
         contact.setLastName(createContactRequest.getLastname());
-        contact.setEmail(createContactRequest.getEmail());
+        contact.setCategory(createContactRequest.getCategory());
         contact.setUserId(user.getUserId());
         return contact;
     }
@@ -58,7 +58,7 @@ public class Mapper {
         response.setFirstName(updatedContact.getFirstName());
         response.setLastName(updatedContact.getLastName());
         response.setPhoneNumber(updatedContact.getPhoneNumber());
-        response.setEmail(updatedContact.getEmail());
+        response.setCategory(updatedContact.getCategory());
         response.setDateUpdated(updatedContact.getDateTimeUpdated().toString());
         return response;
     }
@@ -66,7 +66,7 @@ public class Mapper {
         existingContact.setPhoneNumber(editContactRequest.getPhoneNumber());
         existingContact.setFirstName(editContactRequest.getFirstname());
         existingContact.setLastName(editContactRequest.getLastname());
-        existingContact.setEmail(editContactRequest.getEmail());
+        existingContact.setCategory(editContactRequest.getCategory());
         existingContact.setDateTimeUpdated(LocalDateTime.now());
     }
     public static DeleteContactResponse mapDeleteContactResponse(Contact existingContact, String username) {

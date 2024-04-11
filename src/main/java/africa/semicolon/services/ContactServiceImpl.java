@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import static africa.semicolon.utils.Mapper.*;
 
@@ -29,51 +31,69 @@ public class ContactServiceImpl implements ContactService {
     private UserService userService;
 
     @Override
-    public CreateContactResponse createContact(CreateContactRequest createContactRequest) {
-        String username = createContactRequest.getUsername();
-        mapStatusOf(username);
-        validate(createContactRequest);
-        User user = findUserBy(username);
-        Contact contact = mapContact(createContactRequest, username, user);
+    public CreateContactResponse createContactForUser(CreateContactRequest createContactRequest) {
+        String userId = createContactRequest.getUserId();
+        User user = findUserBy(userId);
+        checkUserStatus(user.getUsername());
+        validateCreateContactRequest(createContactRequest);
+        Contact contact = mapContact(createContactRequest, user.getUsername(), user);
         contact.setDateTimeCreated(LocalDateTime.now());
         Contact savedContact = contactRepository.save(contact);
         return mapCreateContactResponse(savedContact);
     }
 
-
     @Override
-    public EditContactResponse editContact(EditContactRequest editContactRequest) {
-        String username = editContactRequest.getUsername();
-        mapStatusOf(username);
-        User user = findUserBy(username);
-        Contact existingContact = checkingStatus(editContactRequest, user);
+    public EditContactResponse editContactForUser(EditContactRequest editContactRequest) {
+        String userId = editContactRequest.getUserId();
+        User user = findUserBy(userId);
+        checkUserStatus(user.getUsername());
+        Contact existingContact = checkEditContactStatus(editContactRequest, user);
         mapEdit(editContactRequest, existingContact);
         Contact updatedContact = contactRepository.save(existingContact);
         return mapEditContactResponse(updatedContact);
     }
 
     @Override
-    public User findUserBy(String username) {
-        User user = userRepository.findByUsername(username);
+    public User findUserBy(String userId) {
+        User user = userRepository.findUserByUserId(userId);
         if (user == null) {
-            throw new UserNotFoundException("Username not found");
+            throw new UserNotFoundException("User not found with ID: " + userId);
         }
         return user;
     }
 
     @Override
-    public DeleteContactResponse deleteContact(DeleteContactRequest deleteContactRequest) {
-        String username = deleteContactRequest.getUsername();
-        mapStatusOf(username);
-        User user = findUserBy(username);
-        Contact existingContact = checkingStatus(deleteContactRequest, user);
+    public DeleteContactResponse deleteContactForUser(DeleteContactRequest deleteContactRequest) {
+        String userId = deleteContactRequest.getUserId();
+        User user = findUserBy(userId);
+        checkUserStatus(user.getUsername());
+        Contact existingContact = checkDeleteContactStatus(deleteContactRequest, user);
         contactRepository.delete(existingContact);
-        return mapDeleteContactResponse(existingContact, username);
+        return mapDeleteContactResponse(existingContact, user.getUsername());
     }
 
-    private void validate(CreateContactRequest createContactRequest) {
-        String username = createContactRequest.getUsername();
-        if (username == null || username.isEmpty()) {
+    @Override
+    public Optional<Contact> getAllContactsByUserId(String userId) {
+        User user = userRepository.findUserByUserId(userId);
+        if (user == null) {
+            throw new UserNotFoundException("User not found with ID: " + userId);
+        }
+        return contactRepository.findByUserId(userId);
+    }
+
+    @Override
+    public List<Contact> getAllContactsByCategory(String userId,String category) {
+        User user = userRepository.findUserByUserId(userId);
+        if (user == null) {
+            throw new UserNotFoundException("User not found with ID: " + userId);
+        }
+        return contactRepository.findAllByUserIdAndCategory(userId,category);
+    }
+
+    private void validateCreateContactRequest(CreateContactRequest createContactRequest) {
+        String userId = createContactRequest.getUserId();
+        User user = findUserBy(userId);
+        if(user.getUsername()== null || user.getUsername().isEmpty()){
             throw new BigContactException("Username cannot be null or empty");
         }
         String phoneNumber = createContactRequest.getPhoneNumber();
@@ -81,10 +101,10 @@ public class ContactServiceImpl implements ContactService {
         boolean contactExistsByPhoneNumber = contactRepository.existsByPhoneNumber(phoneNumber);
         if (contactExistsByPhoneNumber) {
             throw new BigContactException("Contact already exists");
-            }
+        }
     }
 
-    private void mapStatusOf(String username) {
+    private void checkUserStatus(String username) {
         if (!userService.isUserRegistered(username)) {
             throw new BigContactException("User with username " + username + " is not registered");
         }
@@ -94,10 +114,9 @@ public class ContactServiceImpl implements ContactService {
         }
     }
 
-    private Contact checkingStatus(EditContactRequest editContactRequest, User user) {
+    private Contact checkEditContactStatus(EditContactRequest editContactRequest, User user) {
         String contactId = editContactRequest.getContactId();
-        String userId = user.getUserId();
-        Contact existingContact = contactRepository.findContactByContactIdAndUserId(contactId, userId);
+        Contact existingContact = contactRepository.findContactByContactIdAndUserId(contactId, user.getUserId());
         if (existingContact == null) {
             throw new BigContactException("Contact with ID " + contactId + " not found");
         }
@@ -108,21 +127,18 @@ public class ContactServiceImpl implements ContactService {
         return existingContact;
     }
 
-    private Contact checkingStatus(DeleteContactRequest deleteContactRequest, User user) {
+    private Contact checkDeleteContactStatus(DeleteContactRequest deleteContactRequest, User user) {
         String contactId = deleteContactRequest.getContactId();
-        String userId = user.getUserId();
-        Contact existingContact = contactRepository.findContactByContactIdAndUserId(contactId, userId);
+        Contact existingContact = contactRepository.findContactByContactIdAndUserId(contactId, user.getUserId());
 
         if (existingContact == null) {
             throw new BigContactException("Contact with ID " + contactId + " not found");
         }
 
-        if (!existingContact.getUserId().equals(userId)) {
+        if (!existingContact.getUserId().equals(user.getUserId())) {
             throw new BigContactException("You are not authorized to delete this contact");
         }
 
         return existingContact;
     }
-
-
 }

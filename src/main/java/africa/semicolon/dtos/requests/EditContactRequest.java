@@ -8,6 +8,8 @@ public class EditContactRequest {
     private String firstname;
     private String lastname;
     private String phoneNumber;
-    private String email;
+    private String category;
     private String contactId;
+    private String userId;
+
 }

@@ -33,7 +33,7 @@ public class ContactController {
     @PostMapping("/create")
     public ResponseEntity<?> createContact(@RequestBody CreateContactRequest createContactRequest) {
         try {
-            CreateContactResponse result = contactService.createContact(createContactRequest);
+            CreateContactResponse result = contactService.createContactForUser(createContactRequest);
             return new ResponseEntity<>(new ApiResponse(true, result), CREATED);
         } catch (BigContactException message) {
             return new ResponseEntity<>(new ApiResponse(false, message.getMessage()), BAD_REQUEST);
@@ -44,7 +44,7 @@ public class ContactController {
     @PostMapping("/edit")
     public ResponseEntity<?> editContact(@RequestBody EditContactRequest editContactRequest) {
         try {
-            EditContactResponse result = contactService.editContact(editContactRequest);
+            EditContactResponse result = contactService.editContactForUser(editContactRequest);
             return new ResponseEntity<>(new ApiResponse(true, result), CREATED);
         } catch (BigContactException message) {
             return new ResponseEntity<>(new ApiResponse(false, message.getMessage()), BAD_REQUEST);
@@ -54,7 +54,7 @@ public class ContactController {
     @PostMapping("/delete")
     public ResponseEntity<?> deleteContact(@RequestBody DeleteContactRequest deleteContactRequest) {
         try {
-            DeleteContactResponse result = contactService.deleteContact(deleteContactRequest);
+            DeleteContactResponse result = contactService.deleteContactForUser(deleteContactRequest);
             return new ResponseEntity<>(new ApiResponse(true, result), CREATED);
         } catch (BigContactException message) {
             return new ResponseEntity<>(new ApiResponse(false, message.getMessage()), BAD_REQUEST);
