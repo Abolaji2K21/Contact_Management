@@ -1,6 +1,7 @@
 package africa.semicolon.services;
 
 import africa.semicolon.contactException.BigContactException;
+import africa.semicolon.contactException.UserNotFoundException;
 import africa.semicolon.data.models.User;
 import africa.semicolon.data.repositories.UserRepository;
 import africa.semicolon.dtos.requests.LoginUserRequest;
@@ -234,6 +235,16 @@ class UserServiceImplTest {
         assertEquals(updatedUser.getLastName(), response.getLastname());
     }
 
+    @Test
+    void testUpdateUserProfile_UserNotFound() {
+        UpdateUserRequest updateRequest = new UpdateUserRequest();
+        updateRequest.setUserId("nonExistingUserId");
+        updateRequest.setFirstname("Rename");
+        updateRequest.setLastname("Pen");
+        updateRequest.setUsername("penisup");
+
+        assertThrows(UserNotFoundException.class, () -> userService.updateUserProfile(updateRequest));
+    }
 
 
 }
