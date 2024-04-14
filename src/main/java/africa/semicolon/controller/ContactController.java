@@ -52,7 +52,7 @@ public class ContactController {
         }
     }
 
-    @PostMapping("/delete")
+    @DeleteMapping("/delete")
     public ResponseEntity<?> deleteContact(@RequestBody DeleteContactRequest deleteContactRequest) {
         try {
             DeleteContactResponse result = contactService.deleteContactForUser(deleteContactRequest);
@@ -63,7 +63,7 @@ public class ContactController {
     }
 
     @GetMapping("/getAllByUserId/{userId}")
-    public ResponseEntity<?> getAllContactsByUserId(@PathVariable String userId) {
+    public ResponseEntity<?> getAllContactsByUserId(@PathVariable(name = "userId") String userId) {
         try {
             Optional<Contact> result = contactService.getAllContactsByUserId(userId);
                    return new ResponseEntity<>(new ApiResponse(true, result.get()), OK);
@@ -74,7 +74,7 @@ public class ContactController {
     }
 
     @GetMapping("/getAllByCategory/{userId}/{category}")
-    public ResponseEntity<?> getAllContactsByCategory(@PathVariable String userId, @PathVariable String category) {
+    public ResponseEntity<?> getAllContactsByCategory(@PathVariable(name = "userId")String userId, @PathVariable(name = "category") String category) {
         try {
             List<Contact> result = contactService.getAllContactsByCategory(userId, category);
 //            return !result.isEmpty() ?
