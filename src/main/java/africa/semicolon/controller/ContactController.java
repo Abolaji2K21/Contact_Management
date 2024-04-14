@@ -66,9 +66,8 @@ public class ContactController {
     public ResponseEntity<?> getAllContactsByUserId(@PathVariable String userId) {
         try {
             Optional<Contact> result = contactService.getAllContactsByUserId(userId);
-            return result.isPresent() ?
-                    new ResponseEntity<>(new ApiResponse(true, result.get()), CREATED) :
-                    new ResponseEntity<>(new ApiResponse(false, "No contacts found"), NOT_FOUND);
+                   return new ResponseEntity<>(new ApiResponse(true, result.get()), OK);
+//                    new ResponseEntity<>(new ApiResponse(false, "No contacts found"), NOT_FOUND);
         } catch (BigContactException message) {
             return new ResponseEntity<>(new ApiResponse(false, message.getMessage()), HttpStatus.BAD_REQUEST);
         }
@@ -78,9 +77,9 @@ public class ContactController {
     public ResponseEntity<?> getAllContactsByCategory(@PathVariable String userId, @PathVariable String category) {
         try {
             List<Contact> result = contactService.getAllContactsByCategory(userId, category);
-            return !result.isEmpty() ?
-                    new ResponseEntity<>(new ApiResponse(true, result),CREATED) :
-                    new ResponseEntity<>(new ApiResponse(false, "No contacts found for the given category"), NOT_FOUND);
+//            return !result.isEmpty() ?
+                    return new ResponseEntity<>(new ApiResponse(true, result),OK);
+//                    new ResponseEntity<>(new ApiResponse(false, "No contacts found for the given category"), NOT_FOUND);
         } catch (BigContactException message) {
             return new ResponseEntity<>(new ApiResponse(false, message.getMessage()),BAD_REQUEST);
         }
