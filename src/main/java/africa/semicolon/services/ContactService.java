@@ -8,6 +8,7 @@ import africa.semicolon.dtos.requests.EditContactRequest;
 import africa.semicolon.dtos.response.CreateContactResponse;
 import africa.semicolon.dtos.response.DeleteContactResponse;
 import africa.semicolon.dtos.response.EditContactResponse;
+import africa.semicolon.dtos.response.SuggestContactResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,5 +25,7 @@ public interface ContactService {
 
     List<Contact> getAllContactsByCategory(String userId, String category);
 
+    List<Contact> getAllContactWithTheSameNumber(String phoneNumber);
 
+    SuggestContactResponse suggestContactOnTheFly(String phoneNumber);
 }

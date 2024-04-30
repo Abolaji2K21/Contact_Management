@@ -9,6 +9,7 @@ import africa.semicolon.data.repositories.UserRepository;
 import africa.semicolon.dtos.requests.CreateContactRequest;
 import africa.semicolon.dtos.requests.DeleteContactRequest;
 import africa.semicolon.dtos.requests.EditContactRequest;
+import africa.semicolon.dtos.response.SuggestContactResponse;
 import africa.semicolon.dtos.response.CreateContactResponse;
 import africa.semicolon.dtos.response.DeleteContactResponse;
 import africa.semicolon.dtos.response.EditContactResponse;
@@ -42,6 +43,9 @@ public class ContactServiceImpl implements ContactService {
         return mapCreateContactResponse(savedContact);
     }
 
+
+
+
     @Override
     public EditContactResponse editContactForUser(EditContactRequest editContactRequest) {
         String userId = editContactRequest.getUserId();
@@ -57,7 +61,7 @@ public class ContactServiceImpl implements ContactService {
     public User findUserBy(String userId) {
         User user = userRepository.findUserByUserId(userId);
         if (user == null) {
-            throw new UserNotFoundException("User not found with ID: " + userId);
+            throw new UserNotFoundException("User not found ");
         }
         return user;
     }
@@ -76,7 +80,7 @@ public class ContactServiceImpl implements ContactService {
     public Optional<Contact> getAllContactsByUserId(String userId) {
         User user = userRepository.findUserByUserId(userId);
         if (user == null) {
-            throw new UserNotFoundException("User not found with ID: " + userId);
+            throw new UserNotFoundException("User not found ");
         }
         return contactRepository.findByUserId(userId);
     }
@@ -85,20 +89,28 @@ public class ContactServiceImpl implements ContactService {
     public List<Contact> getAllContactsByCategory(String userId,String category) {
         User user = userRepository.findUserByUserId(userId);
         if (user == null) {
-            throw new UserNotFoundException("User not found with ID: " + userId);
+            throw new UserNotFoundException("User not found ");
         }
         return contactRepository.findAllByUserIdAndCategory(userId,category);
+    }
+
+    @Override
+    public List<Contact> getAllContactWithTheSameNumber(String phoneNumber) {
+
+                 return contactRepository.findContactByPhoneNumber(phoneNumber);
+
     }
 
     private void validateCreateContactRequest(CreateContactRequest createContactRequest) {
         String userId = createContactRequest.getUserId();
         User user = findUserBy(userId);
+
         if(user.getUsername()== null || user.getUsername().isEmpty()){
             throw new BigContactException("Username cannot be null or empty");
         }
         String phoneNumber = createContactRequest.getPhoneNumber();
 
-        boolean contactExistsByPhoneNumber = contactRepository.existsByPhoneNumber(phoneNumber);
+        boolean contactExistsByPhoneNumber = contactRepository.existsByUserIdAndPhoneNumber(user.getUserId(),phoneNumber);
         if (contactExistsByPhoneNumber) {
             throw new BigContactException("Contact already exists");
         }
@@ -118,8 +130,10 @@ public class ContactServiceImpl implements ContactService {
         String contactId = editContactRequest.getContactId();
         Contact existingContact = contactRepository.findContactByContactIdAndUserId(contactId, user.getUserId());
         if (existingContact == null) {
-            throw new BigContactException("Contact with ID " + contactId + " not found");
+            throw new BigContactException("Contact not found");
         }
+
+
 
         if (!existingContact.getUserId().equals(user.getUserId())) {
             throw new BigContactException("You are not authorized to edit this contact");
@@ -132,7 +146,7 @@ public class ContactServiceImpl implements ContactService {
         Contact existingContact = contactRepository.findContactByContactIdAndUserId(contactId, user.getUserId());
 
         if (existingContact == null) {
-            throw new BigContactException("Contact with ID " + contactId + " not found");
+            throw new BigContactException("Contact not found");
         }
 
         if (!existingContact.getUserId().equals(user.getUserId())) {
@@ -141,4 +155,34 @@ public class ContactServiceImpl implements ContactService {
 
         return existingContact;
     }
+
+    public SuggestContactResponse suggestContactOnTheFly(String phoneNumber){
+           SuggestContactResponse suggestContactResponse = new SuggestContactResponse();
+        if(!getAllContactWithTheSameNumber(phoneNumber).isEmpty()){
+            for(var contact : getAllContactWithTheSameNumber(phoneNumber)){
+                suggestContactResponse.getContactResponseList().add(mapContactToResponse(contact));
+            }
+            return suggestContactResponse;
+        }
+         return null;
+    }
+
+//    @Override
+//    public void registerContactsForUser(String userId, List<String> contacts) {
+//        List<String> existingContacts = retrieveExistingContactsForUser(userId);
+//        List<String> suggestedContacts = new ArrayList<>();
+//        for (String contact : contacts) {
+//            if (existingContacts.contains(contact)) {
+//                suggestedContacts.add(contact);
+//            }
+//        }
+//
+//        storeSuggestedContactsForUser(userId, suggestedContacts);
+//
+//        saveContactsForUser(userId, contacts);
+//    }
+
+
+
+
 }

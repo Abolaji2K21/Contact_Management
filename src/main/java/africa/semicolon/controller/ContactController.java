@@ -85,5 +85,13 @@ public class ContactController {
         }
     }
 
+    @GetMapping("/suggest-contact/{phoneNumber}")
+    public ResponseEntity<?> getAllContactsByCategory(@PathVariable("phoneNumber") String phoneNumber) {
+        try {
+            return new ResponseEntity<>(new ApiResponse(true,  contactService.suggestContactOnTheFly(phoneNumber)),OK);
+        } catch (BigContactException message) {
+            return new ResponseEntity<>(new ApiResponse(false, message.getMessage()),BAD_REQUEST);
+        }
+    }
 
 }

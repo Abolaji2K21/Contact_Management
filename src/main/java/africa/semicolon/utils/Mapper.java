@@ -103,4 +103,14 @@ public class Mapper {
 //        return response;
 //    }
 
+    public static ContactResponse mapContactToResponse(Contact contact){
+                ContactResponse contactResponse = new ContactResponse();
+                contactResponse.setCategory(contact.getCategory());
+                contactResponse.setPhoneNumber(contact.getPhoneNumber());
+                contactResponse.setFirstName(contact.getFirstName());
+                contactResponse.setLastName(contact.getLastName());
+        return contactResponse;
+
+    }
+
 }
